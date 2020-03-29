@@ -1,16 +1,23 @@
 {
-  "name": "ney-exceptions",
+  "name": "@neylion/exceptions",
   "version": "1.0.0",
   "description": "Exceptions commonly used within ney projects",
-  "main": "lib/index.js",
   "homepage": "https://github.com/Neylion/ney-exceptions",
   "repository": {
     "type": "git",
     "url": "git@github.com:Neylion/ney-exceptions"
   },
+  "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib/**/*"
+  ],
+  "author": "Fredrik Lindberg",
+  "license": "ISC",
+  "keywords": [
+    "exception",
+    "error",
+    "errorHandling"
   ],
   "scripts": {
     "test": "echo \"No test specified\"",
@@ -22,13 +29,6 @@
     "version" : "npm run format && git add -A src",
     "prepublishOnly" : "npm test && npm run lint"
   },
-  "keywords": [
-    "exception",
-    "error",
-    "errorHandling"
-  ],
-  "author": "Fredrik Lindberg",
-  "license": "ISC",
   "devDependencies": {
     "prettier": "^1.19.1",
     "tslint": "^6.1.0",

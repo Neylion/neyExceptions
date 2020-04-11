@@ -1,26 +1,7 @@
 "use strict";
 
-import { get as getStackTrace } from "stack-trace";
-import cloneDeep from "lodash.clonedeep";
-
-function getCallerHistory(callsToIgnore = 3) {
-  const trace = getStackTrace();
-
-  const fileNames: string[] = [];
-  const errorLocation = [];
-  for (let i = callsToIgnore; i < trace.length; i++) {
-    const fileName = trace[i].getFileName();
-    if (!fileNames.includes(fileName) && fileName !== null /* && !fileName.includes("node_modules")*/) {
-      fileNames.push(fileName);
-      errorLocation.push(`${fileName}:${trace[i].getLineNumber()}`);
-    }
-    if (errorLocation.length >= 3) {
-      break;
-    }
-  }
-  errorLocation.push("For a more detailed stack trace check logs.");
-  return errorLocation;
-}
+import StackUtils from "stack-utils"
+const stackTrace = new StackUtils({cwd: process.cwd(), internals: StackUtils.nodeInternals()})
 
 export interface InnerException {
   config?: any;
@@ -38,24 +19,37 @@ export class Exception extends Error {
   type: string = "unknown";
   typeDescription: string = "Generic exception without specified type.";
   isApplicationError: boolean = true;
-  innerException: InnerException;
+  innerException?: InnerException;
   location: string[];
   constructor(message: string, innerException: InnerException = {}, trace = null) {
     super();
 
     this.message = message;
-    this.innerException = {};
-    if (typeof innerException !== "undefined" && innerException !== null && innerException.message !== message) {
-      delete innerException.config;
-      delete innerException.stack;
-      delete innerException.isApplicationError;
-      delete innerException.location;
-      this.innerException = cloneDeep(innerException);
-      // Clone deep can not handle TypeError messages for whatever reason, hence below:
-      if (innerException.message) {
-        this.innerException.message = innerException.message;
-      }
-    }
-    this.location = trace || getCallerHistory();
+    this.location = trace || this.stack ? getCallerHistory(this.stack) : [ "Could not find error stack trace!" ];
+    this.innerException = cloneInnerException(innerException);;
   }
+}
+
+function getCallerHistory(stack: any, limit = 5, callsToIgnore = 0){
+  const errorStack = stackTrace.clean(stack)
+  const callSites = errorStack.split("\n");
+  const errorTrace: string[] = [];
+  for(let i = callsToIgnore; i < limit+callsToIgnore;i++){
+    errorTrace.push(callSites[i]);
+  }
+  errorTrace.push("For a more detailed stack trace check error stack trace");
+  return errorTrace;
+}
+
+function cloneInnerException(innerException: any){
+  let clonedInnerException;
+  if (typeof innerException !== "undefined" && innerException !== null) {
+    delete innerException.config;
+    delete innerException.stack;
+    delete innerException.isApplicationError;
+
+    clonedInnerException = {};
+    Object.assign(clonedInnerException, innerException);
+  }
+  return clonedInnerException;
 }

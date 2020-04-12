@@ -31,11 +31,12 @@ export class Exception extends Error implements IException {
   innerException?: any;
   location: string[];
   [key: string]: any;
-  constructor(message: string, innerException: any = {}, trace = null) {
+  constructor(message: string, innerException?: any, stack?: string) {
     super();
 
+    this.stack = stack || this.stack;
     this.message = message;
-    this.location = trace || this.stack ? getCallerHistory(this.stack) : ["Could not find error stack trace!"];
+    this.location = this.stack ? getCallerHistory(this.stack) : ["Could not find error stack trace!"];
     this.innerException = cloneInnerException(innerException);
   }
 }
@@ -51,17 +52,17 @@ function getCallerHistory(stack: any, limit = 5, callsToIgnore = 0) {
   return errorTrace;
 }
 
-function cloneInnerException(innerException: any = {}) {
+function cloneInnerException(innerException?: any) {
   let clonedInnerException: any;
-  if (typeof innerException !== "undefined" && innerException !== null) {
+  if (innerException) {
     clonedInnerException = {};
-    if(innerException.isApplicationError){
+    if (innerException.isApplicationError) {
       Object.assign(clonedInnerException, innerException);
     } else {
       // Manual shallow copy of object (as error properties typically are not enumerable and spread operators does not work)
-      Object.getOwnPropertyNames(innerException).forEach((key) => {
+      Object.getOwnPropertyNames(innerException).forEach(key => {
         clonedInnerException[key] = innerException[key];
-      })
+      });
     }
   }
   return clonedInnerException;

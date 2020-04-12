@@ -4,8 +4,8 @@ import { Exception } from "./Exception";
 
 export class TimeoutException extends Exception {
   timeoutConfig: number;
-  constructor(message: string, timeoutConfig: number, innerException: any = {}) {
-    super(message);
+  constructor(message: string, timeoutConfig: number, innerException?: any) {
+    super(message, innerException);
 
     this.name = "TimeoutException";
     this.timeoutConfig = timeoutConfig;

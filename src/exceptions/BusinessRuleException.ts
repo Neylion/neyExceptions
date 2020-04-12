@@ -3,7 +3,7 @@
 import { Exception } from "./Exception";
 
 export class BusinessRuleException extends Exception {
-  constructor(message: string, errorCode: any, innerException: any = {}) {
+  constructor(message: string, errorCode: any, innerException?: any) {
     super(message, innerException);
 
     this.name = "BusinessRuleException";

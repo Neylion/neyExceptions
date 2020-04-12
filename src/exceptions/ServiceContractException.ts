@@ -4,7 +4,7 @@ import { Exception } from "./Exception";
 
 export class ServiceContractException extends Exception {
   name: string;
-  constructor(message: string, innerException: any = {}) {
+  constructor(message: string, innerException?: any) {
     super(message, innerException);
 
     this.name = "ServiceContractException";

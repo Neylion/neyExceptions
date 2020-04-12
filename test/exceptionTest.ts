@@ -50,6 +50,13 @@ describe("getResponseFriendlyException tests", () => {
       expect(friendlyError.innerException.innerException).to.have.property("message", innerUnknownException.message);
     })
   });
+
+  it("If inner no inner error was passed, inner error should be undefined", () => {
+    const exception = new Exception("Exception without innerException");
+    expect(exception.innerException).to.be.undefined;
+    const responseFriendlyException = getResponseFriendlyException(exception);
+    expect(responseFriendlyException.innerException).to.be.undefined;
+  })
 })
 
 function expectInnerErrorsToMatch(actual: any, expected: any){

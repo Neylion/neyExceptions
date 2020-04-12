@@ -3,7 +3,7 @@
 import { Exception } from "./Exception";
 
 export class FaultyConfigException extends Exception {
-  constructor(message: string, innerException: any = {}) {
+  constructor(message: string, innerException?: any) {
     super(message, innerException);
 
     this.name = "FaultyConfigException";

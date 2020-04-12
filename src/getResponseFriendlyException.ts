@@ -5,7 +5,7 @@ import { IException, IExceptionBase } from "./exceptions/Exception";
 class ResponseFriendlyException implements IExceptionBase {
   message: string;
   statusCode: number;
-  errorCode?: number | undefined;
+  errorCode?: number;
   type: string;
   typeDescription: string;
   innerException?: any;

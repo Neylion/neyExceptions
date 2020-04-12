@@ -1,11 +1,10 @@
 "use strict";
 
 import { Exception } from "./Exception";
-import { InnerException } from "./Exception";
 
 export class TimeoutException extends Exception {
   timeoutConfig: number;
-  constructor(message: string, timeoutConfig: number, innerException: InnerException = {}) {
+  constructor(message: string, timeoutConfig: number, innerException: any = {}) {
     super(message);
 
     this.name = "TimeoutException";

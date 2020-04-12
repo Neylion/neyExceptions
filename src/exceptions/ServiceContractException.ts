@@ -1,10 +1,10 @@
 "use strict";
 
 import { Exception } from "./Exception";
-import { InnerException } from "./Exception";
 
 export class ServiceContractException extends Exception {
-  constructor(message: string, innerException: InnerException = {}) {
+  name: string;
+  constructor(message: string, innerException: any = {}) {
     super(message, innerException);
 
     this.name = "ServiceContractException";

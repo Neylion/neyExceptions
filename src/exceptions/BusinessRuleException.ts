@@ -1,10 +1,9 @@
 "use strict";
 
 import { Exception } from "./Exception";
-import { InnerException } from "./Exception";
 
 export class BusinessRuleException extends Exception {
-  constructor(message: string, errorCode: any, innerException: InnerException = {}) {
+  constructor(message: string, errorCode: any, innerException: any = {}) {
     super(message, innerException);
 
     this.name = "BusinessRuleException";

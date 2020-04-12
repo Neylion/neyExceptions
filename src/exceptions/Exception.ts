@@ -3,15 +3,24 @@
 import StackUtils from "stack-utils"
 const stackTrace = new StackUtils({cwd: process.cwd(), internals: StackUtils.nodeInternals()})
 
-export interface InnerException {
+export interface IException extends IExceptionBase {
   config?: any;
   stack?: any;
   isApplicationError?: boolean;
   location?: string[];
-  [x: string]: any;
+} 
+
+export interface IExceptionBase {
+  message: string;
+  statusCode: number;
+  errorCode?: number;
+  type: string;
+  typeDescription: string;
+  innerException?: IException;
+  [key: string]: any;
 }
 
-export class Exception extends Error {
+export class Exception extends Error implements IException {
   name: string = "Exception";
   message: string;
   statusCode: number = 500;
@@ -19,9 +28,10 @@ export class Exception extends Error {
   type: string = "unknown";
   typeDescription: string = "Generic exception without specified type.";
   isApplicationError: boolean = true;
-  innerException?: InnerException;
+  innerException?: any;
   location: string[];
-  constructor(message: string, innerException: InnerException = {}, trace = null) {
+  [key: string]: any;
+  constructor(message: string, innerException: any = {}, trace = null) {
     super();
 
     this.message = message;
@@ -41,7 +51,7 @@ function getCallerHistory(stack: any, limit = 5, callsToIgnore = 0){
   return errorTrace;
 }
 
-function cloneInnerException(innerException: any){
+function cloneInnerException(innerException: any = {}){
   let clonedInnerException;
   if (typeof innerException !== "undefined" && innerException !== null) {
     delete innerException.config;

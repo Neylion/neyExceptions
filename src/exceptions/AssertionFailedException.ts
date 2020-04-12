@@ -1,10 +1,9 @@
 "use strict";
 
 import { Exception } from "./Exception";
-import { InnerException } from "./Exception";
 
 export class AssertionFailedException extends Exception {
-  constructor(message: string, innerException: InnerException = {}) {
+  constructor(message: string, innerException: any = {}) {
     super(message, innerException);
 
     this.name = "AssertionFailedException";

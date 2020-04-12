@@ -1,10 +1,9 @@
 "use strict";
 
 import { Exception } from "./Exception";
-import { InnerException } from "./Exception";
 
 export class NotFoundException extends Exception {
-  constructor(message: string, errorCode = null, innerException: InnerException = {}) {
+  constructor(message: string, errorCode = null, innerException: any = {}) {
     super(message, innerException);
 
     this.name = "NotFoundException";

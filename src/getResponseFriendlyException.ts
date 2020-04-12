@@ -15,14 +15,22 @@ class ResponseFriendlyException implements IExceptionBase {
     this.errorCode = exception.errorCode;
     this.type = exception.type;
     this.typeDescription = exception.typeDescription;
-    if(exception.innerException && exception.innerException.isApplicationError){
-        this.innerException = new ResponseFriendlyException(exception.innerException);
-    } else {
-        this.innerException = exception.innerException;
-        delete this.innerException.stack;
-        delete this.innerException.config;
-    }
+    this.innerException = getInnerException(exception.innerException);
   }
+}
+
+function getInnerException(innerException: any){
+  let responseFriendlyInnerError;
+  if(!innerException) return responseFriendlyInnerError;
+  if(innerException.isApplicationError){
+      responseFriendlyInnerError = new ResponseFriendlyException(innerException);
+  } else {
+      // Making a shallow copy to avoid deleting properties from original error.
+      responseFriendlyInnerError = { ...innerException };
+      delete responseFriendlyInnerError.stack;
+      delete responseFriendlyInnerError.config;
+  }
+  return responseFriendlyInnerError;
 }
 
 export function getResponseFriendlyException(exception: IException) {

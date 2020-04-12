@@ -58,6 +58,7 @@ function cloneInnerException(innerException: any = {}) {
     if(innerException.isApplicationError){
       Object.assign(clonedInnerException, innerException);
     } else {
+      // Manual shallow copy of object (as error properties typically are not enumerable and spread operators does not work)
       Object.getOwnPropertyNames(innerException).forEach((key) => {
         clonedInnerException[key] = innerException[key];
       })

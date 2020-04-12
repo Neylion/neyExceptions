@@ -2,7 +2,8 @@
 
 import "mocha";
 import { expect } from "chai";
-import { Exception, ResourceException, ServiceContractException } from "../src/index";
+import { Exception, ResourceException, ServiceContractException, getResponseFriendlyException } from "../src/index";
+import { AssertionError } from "assert";
 
 describe("Exception tests", () => {
   it("innerException is added properly", () => {
@@ -14,6 +15,22 @@ describe("Exception tests", () => {
     expectInnerErrorsToMatch(upperException.innerException, exception);
     expectInnerErrorsToMatch(upperException.innerException?.innerException, innerException);
   });
+})
+
+describe("responseFriendly errors looks like expected", () => {
+  const propertiesThatShouldBeRemoved = [ "name", "isApplicationError", "location", "stack" ]
+  const exception = new ServiceContractException("Invalid input on field XXX");
+  // Check that exception contains the properties that should be removed
+  propertiesThatShouldBeRemoved.forEach((property) => {
+    expect(exception).to.have.property(property, exception[property], `Property '${property}' did not exist on error`);
+  })
+
+  const friendlyError = getResponseFriendlyException(exception);
+  propertiesThatShouldBeRemoved.forEach((property) => {
+    it(`Property '${property}' is removed`, () => {
+      expect(friendlyError).to.not.have.property(property);
+    })
+  })
 })
 
 function expectInnerErrorsToMatch(actual: any, expected: any){

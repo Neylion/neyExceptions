@@ -17,20 +17,39 @@ describe("Exception tests", () => {
   });
 })
 
-describe("responseFriendly errors looks like expected", () => {
+describe("getResponseFriendlyException tests", () => {
   const propertiesThatShouldBeRemoved = [ "name", "isApplicationError", "location", "stack" ]
-  const exception = new ServiceContractException("Invalid input on field XXX");
-  // Check that exception contains the properties that should be removed
-  propertiesThatShouldBeRemoved.forEach((property) => {
-    expect(exception).to.have.property(property, exception[property], `Property '${property}' did not exist on error`);
-  })
+  const innerUnknownException = new Error("Inner unknown error");
+  const innerNativeException = new Exception("Inner native error", innerUnknownException);
+  const exception = new ServiceContractException("Invalid input on field XXX", innerNativeException);
 
-  const friendlyError = getResponseFriendlyException(exception);
-  propertiesThatShouldBeRemoved.forEach((property) => {
-    it(`Property '${property}' is removed`, () => {
-      expect(friendlyError).to.not.have.property(property);
+  let friendlyError = getResponseFriendlyException(exception);
+  describe("Upper error looks like expected", () => {
+    propertiesThatShouldBeRemoved.forEach((property) => {
+      // Check that exception contains the properties that should be removed
+      expect(exception).to.have.property(property, exception[property], `Property '${property}' did not exist on innerException`);
+      
+      it(`Property '${property}' is removed`, () => {
+        expect(friendlyError).to.not.have.property(property);
+      })
     })
-  })
+  });
+  describe("[isApplicationError = true] (native) inner error looks like expected", () => {
+    propertiesThatShouldBeRemoved.forEach((property) => {
+      // Check that exception contains the properties that should be removed
+      expect(innerNativeException).to.have.property(property, innerNativeException[property], `Property '${property}' did not exist on innerException`);
+      
+      it(`Property '${property}' is removed`, () => {
+        expect(friendlyError.innerException).to.not.have.property(property);
+      })
+    })
+  });
+  describe("[isApplicationError = false] (Unknown) inner error looks like expected", () => {
+    // Hard to test since it's dynamic, testing this specific case for "message" property
+    it("Property 'message' match original error", () => {
+      expect(friendlyError.innerException.innerException).to.have.property("message", innerUnknownException.message);
+    })
+  });
 })
 
 function expectInnerErrorsToMatch(actual: any, expected: any){

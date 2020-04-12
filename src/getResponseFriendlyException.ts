@@ -15,7 +15,13 @@ class ResponseFriendlyException implements IExceptionBase {
     this.errorCode = exception.errorCode;
     this.type = exception.type;
     this.typeDescription = exception.typeDescription;
-    this.innerException = exception.innerException;
+    if(exception.innerException && exception.innerException.isApplicationError){
+        this.innerException = new ResponseFriendlyException(exception.innerException);
+    } else {
+        this.innerException = exception.innerException;
+        delete this.innerException.stack;
+        delete this.innerException.config;
+    }
   }
 }
 

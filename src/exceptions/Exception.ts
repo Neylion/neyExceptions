@@ -52,14 +52,16 @@ function getCallerHistory(stack: any, limit = 5, callsToIgnore = 0) {
 }
 
 function cloneInnerException(innerException: any = {}) {
-  let clonedInnerException;
+  let clonedInnerException: any;
   if (typeof innerException !== "undefined" && innerException !== null) {
-    delete innerException.config;
-    delete innerException.stack;
-    delete innerException.isApplicationError;
-
     clonedInnerException = {};
-    Object.assign(clonedInnerException, innerException);
+    if(innerException.isApplicationError){
+      Object.assign(clonedInnerException, innerException);
+    } else {
+      Object.getOwnPropertyNames(innerException).forEach((key) => {
+        clonedInnerException[key] = innerException[key];
+      })
+    }
   }
   return clonedInnerException;
 }
